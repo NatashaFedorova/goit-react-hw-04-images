@@ -35,7 +35,7 @@ export const App = () => {
   const [isLoadMore, setIsLoadMore] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [selectedGalleryItem, setSelectedGalleryItem] = useState(null);
+  const [selectedGalleryItem, setSelectedGalleryItem] = useState({});
 
   useEffect(() => {
     if (message && totalImages > 0) {
