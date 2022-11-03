@@ -6,7 +6,8 @@ const modalRoot = document.querySelector('#modal-root');
 
 const Modal = ({ item, onClose }) => {
   const onClickBackdrop = e => {
-    if (e.currentTarget === e.target) {
+    console.log(e.currentTarget);
+    if (e.currentTarget !== e.target) {
       onClose();
     }
   };

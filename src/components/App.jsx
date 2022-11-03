@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { getGallery } from './services/api';
 import toast, { Toaster } from 'react-hot-toast';
-import Modal from 'components/Modal';
+
 import Header from './Header';
 import Section from './Section';
 import Searchbar from './Searchbar';
@@ -34,8 +34,6 @@ export const App = () => {
   const [totalImages, setTotalImages] = useState(0);
   const [isLoadMore, setIsLoadMore] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [selectedGalleryItem, setSelectedGalleryItem] = useState({});
 
   useEffect(() => {
     if (message && totalImages > 0) {
@@ -111,10 +109,6 @@ export const App = () => {
     fetchGalleryAfterChangePage();
   }, [page, value, totalImages, gallery]);
 
-  useEffect(() => {
-    setShowModal(prevState => !prevState);
-  }, [selectedGalleryItem]);
-
   const changeValue = value => {
     setValue(value);
     setGallery([]);
@@ -125,14 +119,6 @@ export const App = () => {
   const changePage = () => {
     setPage(prevState => prevState + 1);
     setError(null);
-  };
-
-  const toggleModal = () => {
-    setShowModal(prevState => !prevState);
-  };
-
-  const getImgByItemId = id => {
-    setSelectedGalleryItem(gallery.find(item => item.id === id));
   };
 
   const galleryVisibility = gallery.length > 0;
@@ -146,14 +132,9 @@ export const App = () => {
         <Searchbar onSubmit={changeValue} />
       </Header>
       <Section>
-        {galleryVisibility > 0 && (
-          <ImageGallery gallery={gallery} onChange={getImgByItemId} />
-        )}
+        {galleryVisibility > 0 && <ImageGallery gallery={gallery} />}
         {isLoading && <Loading />}
         {btnLoadMoreVisibility && <BtnLoadMore onClick={changePage} />}
-        {showModal && (
-          <Modal item={selectedGalleryItem} onClose={toggleModal} />
-        )}
       </Section>
       <Toaster position="top-right" />
     </Background>

@@ -1,10 +1,19 @@
 import PropTypes from 'prop-types';
+import Modal from 'components/Modal';
+import { useState } from 'react';
 import { Item, Img } from './ImageGalleryItem.styled';
 
-const ImageGalleryItem = ({ item, onChange }) => {
+const ImageGalleryItem = ({ item }) => {
+  const [showModal, setShowModal] = useState(false);
+
+  const toggleModal = () => {
+    setShowModal(prevState => !prevState);
+  };
+
   return (
-    <Item onClick={() => onChange(item.id)}>
+    <Item onClick={toggleModal}>
       <Img src={item.webformatURL} alt={item.tags} />
+      {showModal && <Modal item={item} onClose={toggleModal} />}
     </Item>
   );
 };
