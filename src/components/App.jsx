@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { getGallery } from './services/api';
-import toast, { Toaster } from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
 
 import Header from './Header';
 import Section from './Section';
@@ -10,20 +10,11 @@ import BtnLoadMore from './BtnLoadMore';
 import Loading from './Loading';
 import { Background } from 'components/constants/Base.styled';
 import { useEffect } from 'react';
-
-const errorStyle = {
-  style: {
-    color: '#fff',
-    background: 'red',
-  },
-};
-
-const messageStyle = {
-  style: {
-    color: '#fff',
-    background: '#48909b',
-  },
-};
+import {
+  searchError,
+  fetchError,
+  messageAboutTotal,
+} from 'components/notify/notify';
 
 export const App = () => {
   const [gallery, setGallery] = useState([]);
@@ -45,18 +36,14 @@ export const App = () => {
         setIsLoading(true);
         const { hits, totalHits } = await getGallery(value, page);
         if (hits.length === 0) {
-          toast.error('Nothing was found for this request :(', errorStyle);
+          searchError();
           return;
         }
         setGallery(hits);
         setTotalImages(totalHits);
         setIsLoadMore(true);
-        toast.success(`Hooray! We found ${totalHits} images.`, messageStyle);
+        messageAboutTotal(totalHits);
       } catch (error) {
-        toast.error(
-          'Oops! Something went wrong :( please, try reloading the page',
-          errorStyle
-        );
       } finally {
         setIsLoading(false);
       }
@@ -78,19 +65,13 @@ export const App = () => {
         setIsLoadMore(false);
         const { hits } = await getGallery(value, page);
         if (hits.length === 0) {
-          toast.error(
-            'Oops! Something went wrong :( please, try reloading the page',
-            errorStyle
-          );
+          fetchError();
           return;
         }
         setGallery(prevState => [...prevState, ...hits]);
         setIsLoadMore(true);
       } catch (error) {
-        toast.error(
-          'Oops! Something went wrong :( please, try reloading the page',
-          errorStyle
-        );
+        fetchError();
       } finally {
         setIsLoading(false);
       }
