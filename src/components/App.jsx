@@ -29,23 +29,9 @@ export const App = () => {
   const [gallery, setGallery] = useState([]);
   const [value, setValue] = useState('');
   const [page, setPage] = useState(1);
-  const [error, setError] = useState(null);
-  const [message, setMessage] = useState(null);
   const [totalImages, setTotalImages] = useState(0);
   const [isLoadMore, setIsLoadMore] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    if (message && totalImages > 0) {
-      toast.success(message, messageStyle);
-    }
-  }, [message, totalImages]);
-
-  useEffect(() => {
-    if (error) {
-      toast.error(error, errorStyle);
-    }
-  }, [error]);
 
   useEffect(() => {
     if (page > 1) {
@@ -59,15 +45,17 @@ export const App = () => {
         setIsLoading(true);
         const { hits, totalHits } = await getGallery(value, page);
         if (hits.length === 0) {
-          setError('Nothing was found for this request :(');
+          toast.error('Nothing was found for this request :(', errorStyle);
+          return;
         }
         setGallery(hits);
         setTotalImages(totalHits);
         setIsLoadMore(true);
-        setMessage(`Hooray! We found ${totalHits} images.`);
+        toast.success(`Hooray! We found ${totalHits} images.`, messageStyle);
       } catch (error) {
-        setError(
-          'Oops! Something went wrong :( please, try reloading the page'
+        toast.error(
+          'Oops! Something went wrong :( please, try reloading the page',
+          errorStyle
         );
       } finally {
         setIsLoading(false);
@@ -90,16 +78,18 @@ export const App = () => {
         setIsLoadMore(false);
         const { hits } = await getGallery(value, page);
         if (hits.length === 0) {
-          setError('Nothing was found for this request :(');
+          toast.error(
+            'Oops! Something went wrong :( please, try reloading the page',
+            errorStyle
+          );
+          return;
         }
         setGallery(prevState => [...prevState, ...hits]);
         setIsLoadMore(true);
-        if (gallery.length === totalImages) {
-          setMessage('All available images are loaded');
-        }
       } catch (error) {
-        setError(
-          'Oops! Something went wrong :( please, try reloading the page'
+        toast.error(
+          'Oops! Something went wrong :( please, try reloading the page',
+          errorStyle
         );
       } finally {
         setIsLoading(false);
@@ -107,18 +97,15 @@ export const App = () => {
     };
 
     fetchGalleryAfterChangePage();
-  }, [page, value, totalImages, gallery]);
+  }, [page, value]);
 
   const changeValue = value => {
     setValue(value);
     setGallery([]);
-    setError(null);
-    setMessage(null);
   };
 
   const changePage = () => {
     setPage(prevState => prevState + 1);
-    setError(null);
   };
 
   const galleryVisibility = gallery.length > 0;
