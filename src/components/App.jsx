@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { getGallery } from './services/api';
+import { fetchGallery } from './services/api';
 import { Toaster } from 'react-hot-toast';
 
 import Header from './Header';
@@ -25,60 +25,31 @@ export const App = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (page > 1) {
-      return;
-    }
     if (value === '') {
       return;
     }
-    const fetchGalleryAfterChangeValue = async () => {
+    const getGallery = async () => {
       try {
         setIsLoading(true);
-        const { hits, totalHits } = await getGallery(value, page);
+        const { hits, totalHits } = await fetchGallery(value, page);
         if (hits.length === 0) {
           searchError();
           return;
         }
-        setGallery(hits);
+        setGallery(prevState => [...prevState, ...hits]);
         setTotalImages(totalHits);
         setIsLoadMore(true);
-        messageAboutTotal(totalHits);
-      } catch (error) {
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchGalleryAfterChangeValue();
-  }, [value, page]);
-
-  useEffect(() => {
-    if (page === 1) {
-      return;
-    }
-
-    if (value === '') {
-      return;
-    }
-    const fetchGalleryAfterChangePage = async () => {
-      try {
-        setIsLoading(true);
-        setIsLoadMore(false);
-        const { hits } = await getGallery(value, page);
-        if (hits.length === 0) {
-          fetchError();
-          return;
+        if (page === 1) {
+          messageAboutTotal(totalHits);
         }
-        setGallery(prevState => [...prevState, ...hits]);
-        setIsLoadMore(true);
       } catch (error) {
         fetchError();
       } finally {
         setIsLoading(false);
       }
     };
-
-    fetchGalleryAfterChangePage();
-  }, [page, value]);
+    getGallery();
+  }, [value, page]);
 
   const changeValue = value => {
     setValue(value);
